@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kakuro Zen</string>
+    <string name="title_activity_main">Kakuro Zen</string>
+    <string name="package_name">com.vahaincepta.kakurozen</string>
+    <string name="custom_url_scheme">com.vahaincepta.kakurozen</string>
+    <string name="admob_app_id">ca-app-pub-5035787704061193~6041765982</string>
+</resources>

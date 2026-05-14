@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Kakuro Zen</title>
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("kakuro-theme");
+          document.documentElement.dataset.theme = theme === "light" ? "light" : "dark";
+          var accent = localStorage.getItem("kakuro-accent");
+          document.documentElement.dataset.accent = /^(purple|halflife|gold|cyan|teal|lime|coral|forest|crimson)$/.test(accent) ? accent : "purple";
+        } catch (_) {
+          document.documentElement.dataset.theme = "dark";
+          document.documentElement.dataset.accent = "purple";
+        }
+      }());
+    </script>
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="launchSplash" class="launch-splash" aria-hidden="true">
+      <div class="launch-splash-badge">
+        <img src="assets/icon.png" alt="" aria-hidden="true" />
+      </div>
+    </div>
+    <div id="loadingOverlay" class="loading-overlay" hidden aria-hidden="true">
+      <div class="loading-card" role="status" aria-live="polite" aria-label="Puzzle loading">
+        <div class="loading-mark" aria-hidden="true">
+          <span class="loading-spinner"></span>
+          <img src="assets/icon.png" alt="" class="loading-icon" />
+        </div>
+        <p id="loadingMessage" class="loading-message">Puzzle loading...</p>
+      </div>
+    </div>
+    <main class="app">
+      <section id="menuScreen" class="screen menu-screen active" aria-label="Main menu">
+        <div id="themeControl" class="theme-control">
+          <button
+            id="themeToggleButton"
+            type="button"
+            class="theme-toggle"
+            aria-label="Open theme settings"
+            title="Open theme settings"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <span class="theme-toggle-shell" aria-hidden="true">
+              <svg class="theme-toggle-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                <g class="theme-toggle-sun">
+                  <circle cx="12" cy="12" r="3.4"></circle>
+                  <path d="M12 2.8v2.2M12 19v2.2M4.8 4.8l1.5 1.5M17.7 17.7l1.5 1.5M2.8 12h2.2M19 12h2.2M4.8 19.2l1.5-1.5M17.7 6.3l1.5-1.5"></path>
+                </g>
+                <path class="theme-toggle-moon" d="M20.1 15.1a8 8 0 0 1-10.2-10.2 8 8 0 1 0 10.2 10.2Z"></path>
+              </svg>
+              <span class="theme-toggle-core"></span>
+            </span>
+            <span class="sr-only">Theme settings</span>
+          </button>
+
+          <section id="themePopover" class="theme-popover" hidden aria-label="Theme settings">
+            <div class="theme-popover-section">
+              <div class="theme-mode-row" role="group" aria-label="Display mode">
+                <button type="button" class="theme-choice-btn" data-theme-choice="dark" aria-label="Dark mode" title="Dark mode">
+                  <svg class="theme-mode-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.1 15.1a8 8 0 0 1-10.2-10.2 8 8 0 1 0 10.2 10.2Z"></path>
+                  </svg>
+                </button>
+                <button type="button" class="theme-choice-btn" data-theme-choice="light" aria-label="Light mode" title="Light mode">
+                  <svg class="theme-mode-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="3.6"></circle>
+                    <path d="M12 2.8v2.2M12 19v2.2M4.8 4.8l1.5 1.5M17.7 17.7l1.5 1.5M2.8 12h2.2M19 12h2.2M4.8 19.2l1.5-1.5M17.7 6.3l1.5-1.5"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="theme-popover-section">
+              <div class="theme-accent-row" role="group" aria-label="Choose accent color">
+                <button type="button" class="theme-accent-btn" data-accent-choice="purple" aria-label="Purple" title="Purple">
+                  <span class="theme-accent-swatch theme-accent-purple"></span>
+                </button>
+                <button type="button" class="theme-accent-btn" data-accent-choice="halflife" aria-label="Half-Life orange" title="Half-Life orange">
+                  <span class="theme-accent-swatch theme-accent-halflife"></span>
+                </button>
+                <button type="button" class="theme-accent-btn" data-accent-choice="gold" aria-label="Gold" title="Gold">
+                  <span class="theme-accent-swatch theme-accent-gold"></span>
+                </button>
+                <button type="button" class="theme-accent-btn" data-accent-choice="cyan" aria-label="Cyan" title="Cyan">
+                  <span class="theme-accent-swatch theme-accent-cyan"></span>
+                </button>
+                <button type="button" class="theme-accent-btn" data-accent-choice="teal" aria-label="Teal" title="Teal">
+                  <span class="theme-accent-swatch theme-accent-teal"></span>
+                </button>
+                <button type="button" class="theme-accent-btn" data-accent-choice="lime" aria-label="#67B500" title="#67B500">
+                  <span class="theme-accent-swatch theme-accent-lime"></span>
+                </button>
+                <button type="button" class="theme-accent-btn" data-accent-choice="coral" aria-label="Coral" title="Coral">
+                  <span class="theme-accent-swatch theme-accent-coral"></span>
+                </button>
+                <button type="button" class="theme-accent-btn" data-accent-choice="forest" aria-label="#254500" title="#254500">
+                  <span class="theme-accent-swatch theme-accent-forest"></span>
+                </button>
+                <button type="button" class="theme-accent-btn" data-accent-choice="crimson" aria-label="#960000" title="#960000">
+                  <span class="theme-accent-swatch theme-accent-crimson"></span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="menu-center">
+          <div class="logo-badge">
+            <img src="assets/icon.png" alt="Kakuro icon" />
+          </div>
+          <p class="menu-title">Kakuro</p>
+          <div class="menu-panel">
+            <div class="size-row">
+              <button id="sizePrev" type="button" class="icon-btn menu-nav-btn" aria-label="Previous size">
+                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M14.5 5.5 8 12l6.5 6.5"></path>
+                </svg>
+              </button>
+              <p id="sizeLabel" class="size-label">13x13</p>
+              <button id="sizeNext" type="button" class="icon-btn menu-nav-btn" aria-label="Next size">
+                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9.5 5.5 16 12l-6.5 6.5"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="menu-actions">
+              <button id="newGameButton" class="pill menu-pill">New Game</button>
+              <button id="resumeButton" class="pill menu-pill">Resume</button>
+            </div>
+          </div>
+        </div>
+        <p class="menu-credit"><span>by</span> Vaha Incepta</p>
+      </section>
+
+      <section id="gameScreen" class="screen game-screen" aria-label="Kakuro game">
+        <header class="game-topbar">
+          <button id="backButton" type="button" class="icon-btn" aria-label="Back to menu">
+            <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="m12 19-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div class="game-title-wrap">
+            <img src="assets/icon.png" alt="" aria-hidden="true" class="game-icon" />
+            <p id="gameTitle">Kakuro</p>
+          </div>
+          <button id="centerButton" type="button" class="icon-btn" aria-label="Center board">
+            <svg class="btn-icon btn-icon-target" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="3.5"></circle>
+              <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"></path>
+            </svg>
+          </button>
+        </header>
+
+        <section id="adSlot" class="ad-slot" aria-hidden="true"></section>
+
+        <section id="viewportShell" class="viewport-shell">
+          <div id="mapViewport" class="map-viewport">
+            <div id="mapCanvas" class="map-canvas">
+              <div id="board" class="board" aria-label="Kakuro board"></div>
+            </div>
+          </div>
+          <div id="solvedPanel" class="solved-panel solved-overlay" hidden>
+            <p class="solved-kicker">Complete</p>
+            <p class="solved-title">Well done</p>
+            <div class="solved-actions">
+              <button id="newGameSolvedButton" type="button" class="mini-btn solved-btn">New Game</button>
+              <button id="menuSolvedButton" type="button" class="mini-btn solved-btn solved-btn-secondary">Main Menu</button>
+            </div>
+          </div>
+          <div id="solveDialog" class="solve-panel solved-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="solveDialogTitle">
+            <p id="solveDialogTitle" class="solved-title solve-title">Solve puzzle?</p>
+            <div class="solved-actions">
+              <button id="solveConfirmButton" type="button" class="mini-btn solved-btn">Solve</button>
+              <button id="solveCloseButton" type="button" class="mini-btn solved-btn solved-btn-secondary">Close</button>
+            </div>
+          </div>
+          <div id="holdMenu" class="hold-menu solved-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="clearDialogTitle">
+            <p id="clearDialogTitle" class="solved-title clear-title">Clear board?</p>
+            <div class="solved-actions">
+              <button id="clearBoardButton" type="button" class="mini-btn solved-btn clear-btn">Clear</button>
+              <button id="clearBoardCloseButton" type="button" class="mini-btn solved-btn solved-btn-secondary">Close</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="statusText" class="status-text">Select a cell and use the keys below. Hold X: clear board.</section>
+
+        <section class="keypad-wrap">
+          <div id="digitPad" class="digit-pad"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js?v=1.0.0"></script>
+  </body>
+</html>
